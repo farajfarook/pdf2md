@@ -6,6 +6,17 @@ import fitz  # PyMuPDF
 import re
 from typing import List, Dict, Tuple, Any
 import logging
+from PIL import Image
+import io
+
+# OCR support (optional)
+try:
+    import pytesseract
+
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+    pytesseract = None
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +28,65 @@ class TextProcessor:
         self.doc = pdf_doc
         self.extracted_text = {}
         self.text_blocks = {}
+
+    def extract_page_text_ocr(self, page_num: int) -> Dict[str, Any]:
+        """
+        Extract text using OCR from a page rendered as image
+        """
+        if not OCR_AVAILABLE:
+            logger.warning("OCR not available - pytesseract not installed")
+            return {
+                "page_num": page_num,
+                "raw_text": "",
+                "cleaned_text": "",
+                "extraction_method": "ocr_unavailable",
+                "text_length": 0,
+                "line_count": 0,
+            }
+
+        if page_num >= len(self.doc):
+            return {}
+
+        try:
+            page = self.doc[page_num]
+
+            # Render page as image
+            mat = fitz.Matrix(2.0, 2.0)  # Higher resolution for better OCR
+            pix = page.get_pixmap(matrix=mat)
+
+            # Convert to PIL Image
+            img_data = pix.tobytes("ppm")
+            pil_image = Image.open(io.BytesIO(img_data))
+
+            # Perform OCR
+            ocr_text = pytesseract.image_to_string(pil_image, lang="eng")
+
+            # Clean the OCR text
+            cleaned_text = self._clean_text(ocr_text)
+
+            page_text_info = {
+                "page_num": page_num,
+                "raw_text": ocr_text,
+                "cleaned_text": cleaned_text,
+                "text_blocks": [],  # OCR doesn't provide block structure
+                "extraction_method": "ocr",
+                "text_length": len(cleaned_text),
+                "line_count": len(cleaned_text.split("\n")) if cleaned_text else 0,
+            }
+
+            self.extracted_text[page_num] = page_text_info
+            return page_text_info
+
+        except Exception as e:
+            logger.error(f"OCR extraction failed for page {page_num}: {e}")
+            return {
+                "page_num": page_num,
+                "raw_text": "",
+                "cleaned_text": "",
+                "extraction_method": "ocr_failed",
+                "text_length": 0,
+                "line_count": 0,
+            }
 
     def extract_page_text(self, page_num: int, method: str = "auto") -> Dict[str, Any]:
         """

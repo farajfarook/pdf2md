@@ -1,9 +1,11 @@
 # PDF to Markdown Converter - Project Plan
 
 ## Overview
+
 Build a hybrid PDF to Markdown converter that intelligently extracts text, preserves images, and maintains document structure with proper image placement in the resulting Markdown.
 
 ## Core Objectives
+
 1. **Hybrid Text Extraction**: Combine direct text extraction with OCR for scanned content
 2. **Image Preservation**: Extract and save images with proper referencing in Markdown
 3. **Layout Understanding**: Maintain document structure (headers, paragraphs, lists, tables)
@@ -12,49 +14,59 @@ Build a hybrid PDF to Markdown converter that intelligently extracts text, prese
 ## Technical Architecture
 
 ### Phase 1: Core Infrastructure
+
 #### 1.1 PDF Analysis Engine
+
 - **Library**: PyMuPDF (fitz) - Best for hybrid text/image extraction
-- **Functionality**: 
+- **Functionality**:
   - Detect text-based vs image-based content per page
   - Extract text blocks with positioning information
   - Identify image locations and boundaries
   - Determine reading order and layout structure
 
 #### 1.2 Image Processing Pipeline
+
 - **Image Extraction**: Extract images with original quality and format
 - **Image Optimization**: Convert to web-friendly formats (PNG/JPEG)
 - **Naming Convention**: `image_page{page_num}_{image_num}.{ext}`
 - **Storage**: Create `images/` directory alongside output Markdown
 
 #### 1.3 Text Processing Pipeline
+
 - **Direct Text Extraction**: For searchable PDFs
 - **OCR Fallback**: Tesseract for scanned content or poor-quality text
 - **Text Cleaning**: Remove artifacts, normalize spacing
 - **Structure Detection**: Identify headers, paragraphs, lists, tables
 
 ### Phase 2: Layout Understanding
+
 #### 2.1 Document Structure Analysis
+
 - **Header Detection**: Font size, weight, positioning patterns
 - **Paragraph Segmentation**: Text block analysis
 - **List Recognition**: Bullet points, numbering patterns
 - **Table Detection**: Grid patterns, cell boundaries
 
 #### 2.2 Image-Text Relationship Mapping
+
 - **Spatial Analysis**: Determine image position relative to text blocks
 - **Flow Integration**: Insert images at logical breakpoints
 - **Caption Detection**: Identify and associate image captions
 - **Reference Handling**: Maintain "Figure X" references
 
 ### Phase 3: Markdown Generation
+
 #### 3.1 Content Ordering Engine
+
 - **Reading Flow**: Top-to-bottom, left-to-right processing
-- **Image Insertion Points**: 
+- **Image Insertion Points**:
   - After relevant paragraphs
   - Before/after section breaks
   - Inline for small diagrams
   - Block-level for large images
 
 #### 3.2 Markdown Formatting
+
 - **Headers**: `#`, `##`, `###` based on hierarchy
 - **Images**: `![alt-text](images/filename.ext)`
 - **Tables**: Markdown table syntax
@@ -62,13 +74,16 @@ Build a hybrid PDF to Markdown converter that intelligently extracts text, prese
 - **Code Blocks**: For technical content detection
 
 ### Phase 4: Quality Assurance
+
 #### 4.1 Validation System
+
 - **Image Integrity**: Verify all images are extracted and referenced
 - **Link Validation**: Ensure all image links are valid
 - **Structure Verification**: Check header hierarchy and flow
 - **Content Completeness**: Compare input vs output content
 
 #### 4.2 Error Handling
+
 - **Corrupted Images**: Skip with warning, maintain text flow
 - **OCR Failures**: Fallback to image-only sections
 - **Layout Ambiguity**: Use best-guess positioning with comments
@@ -76,6 +91,7 @@ Build a hybrid PDF to Markdown converter that intelligently extracts text, prese
 ## Implementation Strategy
 
 ### Technology Stack
+
 ```
 Core Libraries:
 - PyMuPDF (fitz): PDF processing and image extraction
@@ -90,6 +106,7 @@ Optional Enhancements:
 ```
 
 ### File Structure
+
 ```
 pdf-md-converter/
 ├── src/
@@ -111,24 +128,31 @@ pdf-md-converter/
 ### Development Phases
 
 #### Phase 1: MVP (Minimum Viable Product)
+
 - [x] Basic PDF text extraction
-- [ ] Simple image extraction
-- [ ] Basic Markdown generation
-- [ ] Command-line interface
+- [x] Simple image extraction
+- [x] Basic Markdown generation
+- [x] Command-line interface
+- [x] Development environment setup
+- [x] Testing infrastructure
+- [x] Layout analyzer foundation
 
 #### Phase 2: Layout Intelligence
+
 - [ ] Document structure detection
 - [ ] Smart image placement
 - [ ] Table extraction
 - [ ] Header hierarchy detection
 
 #### Phase 3: Advanced Features
+
 - [ ] OCR integration for scanned PDFs
 - [ ] Caption detection and association
 - [ ] Multi-column layout handling
 - [ ] Batch processing capabilities
 
 #### Phase 4: Polish & Optimization
+
 - [ ] Performance optimization
 - [ ] Error handling improvements
 - [ ] Configuration options
@@ -137,6 +161,7 @@ pdf-md-converter/
 ## Key Algorithms
 
 ### 1. Hybrid Content Detection
+
 ```python
 def analyze_page_content(page):
     """
@@ -145,7 +170,7 @@ def analyze_page_content(page):
     """
     text_blocks = page.get_text_blocks()
     images = page.get_images()
-    
+
     if len(text_blocks) > threshold and text_quality_good(text_blocks):
         return 'text'
     elif len(images) > 0 and text_quality_poor(text_blocks):
@@ -155,6 +180,7 @@ def analyze_page_content(page):
 ```
 
 ### 2. Image Placement Algorithm
+
 ```python
 def determine_image_placement(text_blocks, image_bbox):
     """
@@ -168,6 +194,7 @@ def determine_image_placement(text_blocks, image_bbox):
 ```
 
 ### 3. Structure Detection
+
 ```python
 def detect_document_structure(text_blocks):
     """
@@ -181,6 +208,7 @@ def detect_document_structure(text_blocks):
 ```
 
 ## Success Metrics
+
 1. **Accuracy**: >95% text extraction accuracy
 2. **Completeness**: All images extracted and properly placed
 3. **Structure**: Maintains logical document flow
@@ -188,12 +216,14 @@ def detect_document_structure(text_blocks):
 5. **Performance**: Processes typical PDFs in <30 seconds
 
 ## Risk Mitigation
+
 - **Complex Layouts**: Fallback to best-effort positioning
 - **Poor OCR**: Provide image-only sections with warnings
 - **Large Files**: Implement streaming and progress indicators
 - **Memory Issues**: Process pages individually, cleanup resources
 
 ## Future Enhancements
+
 - Web interface for easier usage
 - API endpoints for integration
 - Support for additional output formats (HTML, DOCX)
@@ -206,6 +236,7 @@ def detect_document_structure(text_blocks):
 ## CLI Interface Design
 
 ### Single Command Usage
+
 ```bash
 # Basic conversion
 pdf2md document.pdf
@@ -221,6 +252,7 @@ pdf2md document.pdf --ocr --quality high --format github
 ```
 
 ### Command Structure
+
 ```
 pdf2md [INPUT_FILE] [OPTIONS]
 
@@ -240,6 +272,7 @@ Options:
 ```
 
 ### Installation
+
 ```bash
 # Install via pip (future)
 pip install pdf2md
@@ -249,8 +282,9 @@ python main.py document.pdf
 ```
 
 ## Next Steps
+
 1. Set up development environment
 2. Implement Phase 1 MVP with CLI interface
 3. Test with sample PDFs
 4. Iterate based on results
-5. Expand to Phase 2 features 
+5. Expand to Phase 2 features
