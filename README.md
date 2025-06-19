@@ -15,11 +15,24 @@ A powerful hybrid PDF to Markdown converter that intelligently extracts text and
 
 ### Prerequisites
 
-1. **Python 3.7+** required
-2. **PyMuPDF (fitz)** for PDF processing
+1. **Python 3.8+** required
+2. **uv** (modern Python package manager) - [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
 3. **Tesseract OCR** (optional, for scanned documents)
 
-### Install Dependencies
+### Quick Setup with uv
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd pdf-md-converter
+
+# Create virtual environment and install dependencies
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
+```
+
+### Alternative: Traditional pip
 
 ```bash
 pip install -r requirements.txt
@@ -242,20 +255,70 @@ pip install PyMuPDF
 
 ## Development
 
-### Running Tests
+### Development Setup
 
 ```bash
-# Add test PDFs to tests/samples/
-python -m pytest tests/
+# Install with development dependencies
+uv pip install -e ".[dev]"
+
+# Or use the development helper script
+python scripts/dev.py install
 ```
+
+### Development Commands
+
+```bash
+# Format code
+python scripts/dev.py format
+
+# Lint code
+python scripts/dev.py lint
+
+# Run tests
+python scripts/dev.py test
+
+# Run all checks (format + lint + test)
+python scripts/dev.py all
+
+# Clean build artifacts
+python scripts/dev.py clean
+```
+
+### Manual Commands
+
+```bash
+# Format code
+black src/ main.py
+isort src/ main.py
+
+# Lint code
+flake8 src/ main.py
+mypy src/ main.py
+
+# Run tests with coverage
+pytest --cov=src --cov-report=html
+```
+
+### Project Structure
+
+The project uses modern Python tooling:
+
+- **uv**: Fast Python package manager
+- **pyproject.toml**: Modern project configuration
+- **pytest**: Testing framework with coverage
+- **black**: Code formatting
+- **isort**: Import sorting
+- **flake8**: Linting
+- **mypy**: Type checking
 
 ### Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+2. Create a feature branch: `git checkout -b feature-name`
+3. Set up development environment: `uv pip install -e ".[dev]"`
+4. Make your changes
+5. Run tests: `python scripts/dev.py all`
+6. Submit a pull request
 
 ## License
 
