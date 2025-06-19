@@ -1,0 +1,5 @@
+PyMuPDF>=1.23.0
+Pillow>=10.0.0
+pytesseract>=0.3.10
+click>=8.1.0
+pathlib2>=2.3.7 
